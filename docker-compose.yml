@@ -7,22 +7,54 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./data/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ../data/nginx/default.conf:/etc/nginx/conf.d/default.conf
 #    restart: always
 #    tty: true
 
-  admin:
+  url-shortener-dev-service:
     build:
-      context: ./src
-      dockerfile: Dockerfile
-    command: npm run start:dev
-    container_name: nestjs
+      context: ..
+      dockerfile: ./Dockerfile
+    image: url-shortener-dev-service:latest
+    container_name: url-shortener-dev-service
+    command: npm run start:debug
+    restart: unless-stopped
     ports:
-      - "8080:3000"
-    image: node:16
+      - 3010:3000
+    networks:
+      - backend
+    depends_on:
+      - mysql
     volumes:
-      - ./src:/usr/src/app/src
-      - ./src:/usr/src/app/src/node_modules
-#    restart: always
-#    tty: true
-    working_dir: /usr/src/app/src
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - RDS_HOST=mysql
+      - RDS_PORT=3306
+      - RDS_USERNAME=root
+      - RDS_PASSWORD=
+      - RDS_DATABASE=url-shortener
+
+ url-shortener-prod-service:
+      build:
+        context: .
+        target: production
+        dockerfile: ./Dockerfile
+      image: url-shortener-prod-service:latest
+      command: npm run start:prod
+      restart: unless-stopped
+      ports:
+        - '3000-3003:3000'
+      networks:
+        - backend
+      depends_on:
+        - mysql
+      volumes:
+        - .:/usr/src/app
+        - /usr/src/app/node_modules
+      environment:
+        - RDS_HOST=mysql
+        - RDS_PORT=3306
+        - RDS_USERNAME=root
+        - RDS_PASSWORD=
+        - RDS_DATABASE=url-shortener
