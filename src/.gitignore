@@ -1,7 +1,11 @@
 # compiled output
 /dist
 /node_modules
+<<<<<<< HEAD
 
+=======
+../*
+>>>>>>> 33a699a (finish refresh token)
 # Logs
 logs
 *.log
