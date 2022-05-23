@@ -1,8 +1,6 @@
-<<<<<<< HEAD
 ./src/node_module
-=======
 mongodb/
 data/
 nginx/
 .idea/
->>>>>>> 33a699a (finish refresh token)
+
